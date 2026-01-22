@@ -11,6 +11,7 @@ on:
 env:
   NODE_VERSION: 20
   YARN_VERSION: 1.22.21
+  NPM_ORG: '@tomo-inc'
 
 jobs:
   build:
@@ -46,7 +47,6 @@ jobs:
     environment: release
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_ORG: ${{ secrets.NPM_ORG }}
 
     steps:
       - name: Checkout repository
@@ -80,7 +80,7 @@ jobs:
       - name: Setup .npmrc for publishing
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "@$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
 
       - name: Build project
@@ -96,7 +96,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-')
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_ORG: ${{ secrets.NPM_ORG }}
 
     steps:
       - name: Checkout repository
@@ -137,7 +136,7 @@ jobs:
       - name: Setup .npmrc for publishing
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "@$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
 
       - name: Build project
