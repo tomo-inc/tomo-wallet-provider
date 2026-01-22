@@ -56,12 +56,19 @@ jobs:
 
       - name: Verify version format
         run: |
-          if [[ ! $GITHUB_REF =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Invalid version format: $GITHUB_REF. Must be vX.Y.Z"
+          if [[ ! $GITHUB_REF =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]]; then
+            echo "::error::Invalid version format: $GITHUB_REF. Must be vX.Y.Z or vX.Y.Z-prerelease.N"
             exit 1
           fi
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # Determine npm tag based on version
+          if [[ $VERSION =~ -(alpha|beta|rc)\. ]]; then
+            NPM_TAG=$(echo $VERSION | sed -E 's/.*-(alpha|beta|rc)\.[0-9]+.*/\1/')
+            echo "NPM_TAG=$NPM_TAG" >> $GITHUB_ENV
+          else
+            echo "NPM_TAG=latest" >> $GITHUB_ENV
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -87,4 +94,9 @@ jobs:
         run: yarn build
 
       - name: Publish to npm
-        run: npm publish
+        run: |
+          if [ "$NPM_TAG" = "latest" ]; then
+            npm publish
+          else
+            npm publish --tag $NPM_TAG
+          fi
