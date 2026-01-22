@@ -11,7 +11,6 @@ on:
 env:
   NODE_VERSION: 20
   YARN_VERSION: 1.22.21
-  NPM_ORG: '@tomo-inc'
 
 jobs:
   build:
@@ -27,8 +26,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@tomo-inc'
 
       - name: Install Yarn
         run: |
@@ -81,21 +78,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Setup .npmrc for publishing
-        run: |
-          # actions/setup-node already created .npmrc with auth token
-          # We just need to ensure scope registry is set
-          echo "$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-
       - name: Build project
         run: yarn build
 
       - name: Publish to npm
-        run: |
-          echo "🚀 Publishing @tomo-inc/tomo-wallet-provider@$VERSION with tag 'latest'..."
-          npm publish --access public --no-git-checks
-          echo "✅ Successfully published"
+        run: npm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -145,20 +132,10 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Setup .npmrc for publishing
-        run: |
-          # actions/setup-node already created .npmrc with auth token
-          # We just need to ensure scope registry is set
-          echo "$NPM_ORG:registry=https://registry.npmjs.org/" >> ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-
       - name: Build project
         run: yarn build
 
       - name: Publish to npm
-        run: |
-          echo "🚀 Publishing @tomo-inc/tomo-wallet-provider@$VERSION with tag '$NPM_TAG'..."
-          npm publish --access public --no-git-checks --tag "$NPM_TAG"
-          echo "✅ Successfully published"
+        run: npm publish --access public --no-git-checks --tag "$NPM_TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
