@@ -53,7 +53,8 @@ export default defineConfig({
         typescript({
           sourceMap: false,
           declaration: true,
-          outDir: 'dist'
+          outDir: 'dist',
+          exclude: ['**/demo/**', '**/index.tsx']
         })
       ]
     }
